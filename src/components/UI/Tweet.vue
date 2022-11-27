@@ -51,7 +51,7 @@ export default {
 	},
 	emits: ['onSubmit'],
 	setup({ id }, { emit }) {
-		const handleOnSubmit = () => emit('onSubmit', id)
+		const handleOnSubmit = () => emit('onSubmit')
 		return { handleOnSubmit }
 	}
 }

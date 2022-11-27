@@ -57,6 +57,7 @@
 .md-body h4,
 .md-body h5,
 .md-body h6 {
+	font-weight: 700;
 	margin-top: 0;
 	margin-bottom: 0;
 }
@@ -116,11 +117,11 @@
 	margin-bottom: 1em;
 }
 
-.md-body img[align="right"] {
+.md-body img[align='right'] {
 	padding-left: 20px;
 }
 
-.md-body img[align="left"] {
+.md-body img[align='left'] {
 	padding-right: 20px;
 }
 
@@ -129,7 +130,8 @@ ul > li:first-child > ul > li {
 	list-style-type: square;
 }
 
-.md-body, ul-st ul {
+.md-body,
+ul-st ul {
 	display: block;
 	list-style-type: disc;
 	margin-block-start: 1em;
@@ -144,7 +146,6 @@ ul > li:first-child > ul > li {
 	}
 }
 
-
 .md-body ol {
 	position: relative;
 	counter-reset: list;
@@ -158,7 +159,7 @@ ul > li:first-child > ul > li {
 			position: absolute;
 			left: rem(18);
 			counter-increment: list;
-			content: counter(list) ". ";
+			content: counter(list) '. ';
 		}
 	}
 }

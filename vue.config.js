@@ -1,9 +1,15 @@
 /** @format */
 
-const { defineConfig } = require("@vue/cli-service");
+const { defineConfig } = require('@vue/cli-service')
+
 module.exports = defineConfig({
 	transpileDependencies: true,
-	publicPath: "/",
+	publicPath: '/',
 	productionSourceMap: false,
-	assetsDir: "assets"
-});
+	assetsDir: 'assets',
+	configureWebpack: {
+		resolve: {
+			fallback: {}
+		}
+	}
+})

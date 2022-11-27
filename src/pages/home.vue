@@ -1,6 +1,7 @@
 <!-- @format -->
 
 <template>
+	<router-view></router-view>
 	<div v-if="isLoading">
 		<Spinner :width="50" :height="50" />
 	</div>
@@ -19,9 +20,9 @@
 				:imgUrl="item.avatar"
 				:name="item.date"
 				:likes="item.likes"
-				@onSubmit="handleLikeSubmit"
-				>{{ item.body }}</Tweet
-			>
+				@onSubmit="handleLikeSubmit(item)"
+				><div class="md-body" v-html="compiledMarked(item.body)"></div>
+			</Tweet>
 		</div>
 		<button class="btn btnTweet btnTweetHome" @click="handleShowModal">
 			New tweet
@@ -38,43 +39,40 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { compiledMarked } from '@/Utils/utils'
 import Spinner from '@/components/UI/Spinner.vue'
 import Modal from '@/components/UI/Modal.vue'
 import Tweet from '@/components/UI/Tweet.vue'
 import TweetForm from '@/components/UI/TweetForm.vue'
+import { httpData } from '@/http-common'
 
 export default {
 	components: { Spinner, Modal, Tweet, TweetForm },
 	setup() {
-		const data = ref([
-			{
-				id: 1,
-				body: 'hello world 1',
-				avatar:
-					'https://tocode.ru/static/_secret/bonuses/1/avatar-1Tq9kaAql.png',
-				likes: 4,
-				date: '11-11-2022'
-			},
-			{
-				id: 2,
-				body: 'hello world 2',
-				avatar:
-					'https://tocode.ru/static/_secret/bonuses/1/avatar-1Tq9kaAql.png',
-				likes: 1,
-				date: '12-11-2022'
-			},
-			{
-				id: 3,
-				body: 'hello world 2',
-				avatar:
-					'https://tocode.ru/static/_secret/bonuses/1/avatar-1Tq9kaAql.png',
-				likes: 8,
-				date: '19-11-2022'
-			}
-		])
+		const isLoading = ref(true)
+		const data = ref([])
 
-		const sortBy = ref('likes')
+		onMounted(() => handleStore())
+
+		//get data from firebase
+		const handleStore = () => {
+			httpData
+				.get('/tweets.json')
+				.then(res => {
+					console.log(res.data)
+					const nextData = []
+					Object.keys(res.data).forEach(key => {
+						const item = res.data[key]
+						nextData.push({ id: key, ...item })
+					})
+					data.value = nextData
+					isLoading.value = false
+				})
+				.catch(e => console.log(e))
+		}
+
+		const sortBy = ref('date')
 		const dateSorted = computed(() => {
 			return data.value.sort((a, b) => {
 				if (a[sortBy.value] < b[sortBy.value]) return 1
@@ -82,12 +80,7 @@ export default {
 			})
 		})
 
-		const isLoading = ref(true)
 		const isShowModal = ref(false)
-
-		setTimeout(() => {
-			isLoading.value = false
-		}, 1000)
 
 		//Show modal window
 		const handleShowModal = () => {
@@ -96,21 +89,33 @@ export default {
 			console.log(isShowModal.value)
 		}
 		//Emit likes
-		const handleLikeSubmit = id => {
-			console.log(`tweet id ${id} has been liked`)
+		const handleLikeSubmit = tweet => {
+			//console.log(`tweet ${data.value[0]} has been liked`)
+			const nextTweet = { ...tweet }
+			nextTweet.likes++
+			http
+				.put(`/tweets/${tweet.id}.json`, nextTweet)
+				.then(() => {
+					tweet.likes++
+				})
+				.catch(e => console.log(e))
+			console.log(nextTweet)
 		}
 
 		//Emit tweet form
 		const handleFormSubmit = text => {
-			data.value.push({
-				id: data.value.length + 1,
-				body: text,
-				avatar:
-					'https://tocode.ru/static/_secret/bonuses/1/avatar-1Tq9kaAql.png',
-				likes: 0,
-				date: new Date(Date.now()).toLocaleString()
-			})
-			handleShowModal()
+			http
+				.post('/tweets.json', {
+					body: text,
+					avatar: `https://avatars.dicebear.com/api/male/${Date.now()}.svg`,
+					likes: 0,
+					date: new Date(Date.now()).toLocaleString()
+				})
+				.then(() => {
+					handleStore()
+					handleShowModal()
+				})
+				.catch(e => console.log(e))
 		}
 
 		return {
@@ -119,6 +124,8 @@ export default {
 			handleShowModal,
 			handleLikeSubmit,
 			handleFormSubmit,
+			handleStore,
+			compiledMarked,
 			dateSorted,
 			sortBy
 		}

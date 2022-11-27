@@ -24,3 +24,9 @@ export const links = [
 		url: '/about'
 	}
 ]
+
+export const requestUri = 'http://localhost'
+export const webAPIkey = 'AIzaSyDtl-sJ1HRn69RR7mkIRWi0MUxgQ8UV3lU'
+export const client_id =
+	'637559037896-8hpfm4n8e77aq916jlmpd128a0skggl2.apps.googleusercontent.com'
+export const providerId = 'google.com'
