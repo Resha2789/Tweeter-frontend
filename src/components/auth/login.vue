@@ -1,12 +1,12 @@
 <!-- @format -->
 
 <template>
-	<teleport v-if="!userAuth" to="body">
+	<teleport to="body">
 		<transition name="modal">
-			<div class="modal__wrapper">
-				<div class="modal-content">
-					<div class="modal-header"><span>Login</span></div>
-					<div class="modal-body">
+			<div class="modal-login__wrapper" @click="handleModalClose">
+				<div class="modal-login-content" @click.stop>
+					<div class="modal-login-header"><span>Login</span></div>
+					<div class="modal-login-body">
 						<div id="login"></div>
 					</div>
 				</div>
@@ -16,32 +16,44 @@
 </template>
 
 <script lang="ts">
-import { onMounted, onBeforeMount, ref, reactive, computed } from 'vue'
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { onMounted, ref, watchEffect } from 'vue'
 import { useStore } from 'vuex'
-import { IUser, IUserData } from '@/types/User'
+import { useRouter } from 'vue-router'
 import { login } from '@/servises/login'
 declare var google: any
 
 export default {
 	setup() {
+		const router = useRouter()
 		onMounted(() => {
 			login()
 		})
 
+		const handleModalClose = () => {
+			const path = router.currentRoute.value.path.replace(/(login)$/i, '')
+
+			router.push(path)
+			console.log('onClose', router.currentRoute.value)
+		}
+
 		const store = useStore()
 
-		const userAuth = computed((): boolean => {
-			console.log('computed userAuth')
-			return store.getters.getUser.auth
+		const userAuth = ref(false as boolean)
+
+		watchEffect(() => {
+			userAuth.value = store.getters.getUser.isAuth
+			if (userAuth.value) {
+				handleModalClose()
+			}
+			console.log('watchEffect LOGIN')
 		})
 
-		return { userAuth }
+		return { userAuth, handleModalClose }
 	}
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 // Animation
 .modal-enter {
 	opacity: 0;
@@ -54,7 +66,7 @@ export default {
 	transform: scale(1.2);
 }
 
-.modal__wrapper {
+.modal-login__wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -64,11 +76,11 @@ export default {
 	left: 0;
 	transition: opacity 0.2s ease;
 	right: 0;
-	//z-index: 998;
+	z-index: 998;
 	//background-color: rgba(00, 00, 00, 0.48);
 }
 
-.modal-content {
+.modal-login-content {
 	position: relative;
 	max-width: 600px;
 	padding: 20px 18px;
@@ -84,7 +96,7 @@ export default {
 	}
 }
 
-.modal-header {
+.modal-login-header {
 	display: flex;
 	align-self: center;
 	justify-content: space-around;
@@ -101,7 +113,7 @@ export default {
 // 	display: none;
 // }
 
-.modal-body {
+.modal-login-body {
 	display: flex;
 	align-self: center;
 	justify-content: space-around;

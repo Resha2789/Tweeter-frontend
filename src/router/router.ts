@@ -1,51 +1,60 @@
 /** @format */
 
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
-import login from '@/router/middleware/login'
-
+import HeaderPage from '@/components/header.vue'
+import FooterPage from '@/components/footer.vue'
 import HomePage from '@/pages/home.vue'
 import AboutPage from '@/pages/about.vue'
 import NotFound from '@/pages/notFound.vue'
-import loginPage from '@/pages/login/login.vue'
-import { auth } from '@/servises/auth'
-import { IUserData } from '@/types/User'
+import TestPage from '@/pages/test.vue'
+import loginPage from '@/components/auth/login.vue'
+import { authUser, logout } from '@/router/middleware/auth'
 
 const history = createWebHashHistory()
 
-const childrenHome = [
-	{
-		path: '/login',
-		component: loginPage
-	}
-]
-
-const childrenAbout = [
-	{
-		path: '/about/login',
-		component: loginPage
-	}
-]
-
-const routes = [
+const routes: Array<any | RouteRecordRaw> = [
 	{
 		path: '/',
 		name: 'home',
-		component: HomePage,
-		children: childrenHome
-		// meta: {
-		// 	middleware: [login]
-		// }
+		components: {
+			default: HomePage,
+			HeaderPage,
+			FooterPage
+		},
+		children: [
+			{
+				path: 'login',
+				component: loginPage
+			}
+		]
 	},
 	{
-		path: '/about',
+		path: '/about/',
 		name: 'about',
-		component: AboutPage,
-		children: childrenAbout
-		// meta: {
-		// 	middleware: [login]
-		// }
+		components: {
+			default: AboutPage,
+			HeaderPage,
+			FooterPage
+		},
+		children: [
+			{
+				path: '/about/login',
+				component: loginPage
+			}
+		]
 	},
+	{
+		path: '/test',
+		name: 'test',
+		component: TestPage
+	},
+	{
+		path: '/:pathMatch(.*)*/logout',
+		name: 'logout',
+		component: ''
+	},
+
 	{
 		path: '/:pathMatch(.*)*',
 		name: '404',
@@ -54,47 +63,15 @@ const routes = [
 ]
 
 const router = createRouter({
-	routes,
-	history
+	history,
+	routes
 })
 
-router.beforeEach(async (to, from, next) => {
-	console.log('beforeEach')
-	var user = {} as IUserData
-	await auth()
-		.then((userData: IUserData) => {
-			user = userData
-		})
-		.catch(e => console.log('auth error'))
+router.beforeEach(async (to: any, from: any, next: any) => {
+	next = await authUser({ to, from, next })
+	next = logout({ to, from, next })
 
-	console.log('auth', user)
-	if (!user.auth) {
-		// if (!to.meta.middleware) {
-		// 	console.log('not middleware')
-		// 	return next()
-		// }
-		// const middleware: any = to.meta.middleware
-		// console.log(middleware)
-		// const context = {
-		// 	to,
-		// 	from,
-		// 	next
-		// }
-		// return middleware[0]({ ...context })
-	}
-
-	if (user.auth && to.path == '/login') {
-		console.log(to.path)
-		return next({ path: '/' })
-	}
-
-	console.log('to.path', to.path)
-	if (!user.auth && to.path !== '/login' && to.path !== '/about/login') {
-		if (to.path !== '/login') next({ path: '/login' })
-		if (to.path !== '/about/login') next({ path: '/about/login' })
-	} else {
-		return next()
-	}
+	return next()
 })
 
 export default router

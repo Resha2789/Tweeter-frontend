@@ -2,7 +2,7 @@
 
 export interface IUserData {
 	user_id: string | undefined
-	auth: boolean | undefined
+	isAuth: boolean | undefined
 	firstName: string | undefined
 	lastName: string | undefined
 	email: string | undefined
@@ -19,7 +19,6 @@ export interface ILoginForm {
 
 export interface IUser {
 	user: IUserData
-	loginForm: ILoginForm
 }
 
 export interface IPayload {

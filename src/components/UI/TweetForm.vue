@@ -3,14 +3,14 @@
 <template>
 	<form @submit.prevent="onSubmit">
 		<textarea required v-model="text" />
-		<button type="submit" class="btn btnPrimary">Send tweet</button>
+		<button type="submit" class="btn btnPrimary">Отправить</button>
 	</form>
 </template>
 
-<script>
-import { ref } from 'vue'
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 
-export default {
+export default defineComponent({
 	emits: ['onSubmit'],
 	setup(_, { emit }) {
 		const text = ref('')
@@ -21,5 +21,5 @@ export default {
 
 		return { text, onSubmit }
 	}
-}
+})
 </script>

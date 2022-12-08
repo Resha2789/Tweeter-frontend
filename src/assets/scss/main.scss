@@ -22,7 +22,7 @@ html {
 
 body {
 	font-family: $mainFont;
-	font-size: $mainFontSize;
+	font-size: rem($mainFontSize);
 	font-weight: $mainFontWeight;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -107,13 +107,15 @@ section,
 		max-width: $tableWidth;
 	}
 	@media screen and (max-width: $tableWidth) {
-		max-width: $smTableWidth;
+		max-width: $tableWidth;
 	}
 	@media screen and (max-width: $smTableWidth) {
-		max-width: $phoneWidth;
+		max-width: $smTableWidth;
 	}
 	@media screen and (max-width: $phoneWidth) {
-		max-width: $smPhoneWidth;
+		max-width: $phoneWidth;
+		$mainFontSize: 30px;
+		padding: 5px;
 	}
 }
 

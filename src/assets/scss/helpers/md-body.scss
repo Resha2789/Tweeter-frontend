@@ -8,6 +8,7 @@
 	@if (unitless($context)) {
 		$context: $context * 1px;
 	}
+
 	@return $pixels / $context * 1rem;
 }
 
@@ -134,11 +135,11 @@ ul > li:first-child > ul > li {
 ul-st ul {
 	display: block;
 	list-style-type: disc;
-	margin-block-start: 1em;
-	margin-block-end: 1em;
+	margin-block-start: rem(10);
+	margin-block-end: rem(10);
 	margin-inline-start: 0px;
 	margin-inline-end: 0px;
-	padding-inline-start: rem(40);
+	padding-inline-start: rem(15);
 	li {
 		position: relative;
 		margin-bottom: calc(1.82em / 2);

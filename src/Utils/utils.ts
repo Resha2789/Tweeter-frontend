@@ -1,20 +1,20 @@
 /** @format */
 
 import { marked } from 'marked'
-import { IUserData, IPayload } from '@/types/User'
+import { IUserData, IPayload } from '@/types/user'
 import jwt_decode from 'jwt-decode'
 
 export const compiledMarked = (text: string) => marked(text)
 
-export const setLocalStorage = (key: string, data: IUserData) => {
+export const setLocalStorage = (key: string, data: any) => {
 	console.log('setLocalStorage', data)
 	localStorage.setItem(key, JSON.stringify(data))
 }
 
-export const getLocalStorage = (key: string): IPayload => {
-	const data = localStorage.getItem('user')
+export const getLocalStorage = (key: string): any => {
+	const data = localStorage.getItem(key)
 	if (data) return { payload: JSON.parse(data) }
-	return { payload: {} }
+	return { payload: undefined }
 }
 
 export const expireTime = (token: string) => {
@@ -27,16 +27,24 @@ export const expireTime = (token: string) => {
 	}
 }
 
+export const getUserId = (token: string | undefined) => {
+	if (token) {
+		const user: any = jwt_decode(token)
+		return user?.user_id
+	}
+	return undefined
+}
+
 export const getUserData = ({
 	firstName,
 	lastName,
 	email,
 	displayName,
 	photoUrl,
-	user_id,
+	localId,
 	refreshToken,
 	access_token,
-	auth,
+	isAuth,
 	expires_in
 }: {
 	firstName: string | undefined
@@ -44,10 +52,10 @@ export const getUserData = ({
 	email: string | undefined
 	displayName: string | undefined
 	photoUrl: string | undefined
-	user_id: string | undefined
+	localId: string | undefined
 	refreshToken: string | undefined
 	access_token: string | undefined
-	auth: boolean | undefined
+	isAuth: boolean | undefined
 	expires_in: string | undefined
 }): IUserData => {
 	const user = {} as IUserData
@@ -56,9 +64,41 @@ export const getUserData = ({
 	user.email = email
 	user.displayName = displayName
 	user.photoUrl = photoUrl
-	user.user_id = user_id
+	user.user_id = localId
 	user.refreshToken = refreshToken
 	user.access_token = access_token
-	user.auth = auth
+	user.isAuth = isAuth
 	return user
+}
+
+export function observeObject() {
+	var _class = {
+		init: function (selector: any, callback: any) {
+			var element = document.querySelector(selector)
+			console.log('element', element)
+
+			try {
+				var observer = new MutationObserver(function (mutations) {
+					mutations.forEach(function (mutation) {
+						callback(mutation.target, mutation.attributeName, mutation.oldValue)
+					})
+				})
+
+				observer.observe(element, {
+					attributes: true,
+					subtree: true,
+					attributeOldValue: true
+				})
+			} catch (z) {
+				// element.addEventListener(
+				// 	'DOMAttrModified',
+				// 	function (e: any) {
+				// 		callback(e.target, e.attrName, e.prevValue)
+				// 	},
+				// 	false
+				// )
+			}
+		}
+	}
+	return _class
 }

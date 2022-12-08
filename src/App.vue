@@ -2,22 +2,22 @@
 
 <template>
 	<div class="wrapper">
-		<Header />
+		<router-view name="HeaderPage"></router-view>
 		<div class="wrapper-content">
 			<div class="container">
-				<router-view />
+				<router-view></router-view>
 			</div>
 		</div>
-		<Footer />
+		<!-- <router-view name="FooterPage"></router-view> -->
 	</div>
 </template>
 
-<script>
-import Header from '@/components/header.vue'
-import Footer from '@/components/footer.vue'
+<script lang="ts">
+// import Header from '@/components/header.vue'
+// import Footer from '@/components/footer.vue'
 
 export default {
-	components: { Footer, Header }
+	// components: { Footer, Header }
 }
 </script>
 

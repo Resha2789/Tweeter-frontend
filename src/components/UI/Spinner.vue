@@ -2,15 +2,14 @@
 
 <template>
 	<div class="spinner-wrapper">
-		<div
-			class="spinner"
-			:style="{ width: `${width}px`, height: `${height}px` }"
-		></div>
+		<div class="spinner" :style="{ width: `${width}px`, height: `${height}px` }"></div>
 	</div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
 	props: {
 		width: {
 			type: Number,
@@ -21,7 +20,7 @@ export default {
 			default: 80
 		}
 	}
-}
+})
 </script>
 
 <style lang="scss">
